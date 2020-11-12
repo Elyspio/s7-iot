@@ -1,0 +1,2 @@
+rootProject.name = "Projet-iot"
+include ':app'
