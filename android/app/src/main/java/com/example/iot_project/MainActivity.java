@@ -1,4 +1,4 @@
-package fr.elyspio.projet_iot;
+package com.example.iot_project;
 
 import androidx.appcompat.app.AppCompatActivity;
 

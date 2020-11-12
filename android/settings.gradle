@@ -1,2 +1,2 @@
-rootProject.name = "Projet-iot"
 include ':app'
+rootProject.name = "IOT_Project"
