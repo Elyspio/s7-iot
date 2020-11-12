@@ -1,8 +1,4 @@
-# CPE Lyon - 4IRC - S7 - Année 2020/
-
-# Architecture et Protocoles Réseaux pour l’IoT
-
-# Projet - Mise en place d’une mini-architecture IoT
+# CPE Lyon - 4IRC - S7 - Année 2020 / Architecture et Protocoles Réseaux pour l’IoT / Projet - Mise en place d’une mini-architecture IoT
 
 ### Oscar Carrillo - Anthony Chomienne
 
