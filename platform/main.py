@@ -2,8 +2,8 @@
 
 # Press Shift+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-
 from android.link import run_android_link
+from database.tables import initialize_db
 from microbit.link import run_microbit_link
 
 
@@ -14,8 +14,7 @@ def print_hi(name):
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    print_hi('PyCharm')
-
+initialize_db()
 run_android_link()
 run_microbit_link()
 

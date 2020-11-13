@@ -1,1 +1,3 @@
 ﻿platform/venv
+__pycache__
+platform/.idea
