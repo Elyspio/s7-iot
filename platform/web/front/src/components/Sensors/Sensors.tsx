@@ -1,7 +1,4 @@
 import React from 'react';
-import {RootState} from "../../store/reducer";
-import {Dispatch} from "redux";
-import {connect, ConnectedProps} from "react-redux";
 import "./Sensors.scss"
 import {Data, DataCode, Sensor, SensorApi} from "../../api/sensor";
 import {Graph, GraphProps} from "./Graph";
@@ -12,17 +9,17 @@ import Typography from '@material-ui/core/Typography';
 import Container from "@material-ui/core/Container"
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
-const mapStateToProps = (state: RootState) => ({})
-
-const mapDispatchToProps = (dispatch: Dispatch) => ({})
-
-const connector = connect(mapStateToProps, mapDispatchToProps);
-type ReduxTypes = ConnectedProps<typeof connector>;
 
 const api = SensorApi.instance;
 
 type Showed = { [key in DataCode["code"]]: GraphProps };
-const Sensors = (props: ReduxTypes) => {
+
+function getRandomColor(): [number, number, number] {
+	const rng = () => ((Math.random() * 1000) % 256)
+	return [rng(), rng(), rng()]
+}
+
+const Sensors = () => {
 
 	const [data, setData] = React.useState<Data[]>([]);
 	const [dataCode, setDataCode] = React.useState<DataCode[]>([]);
@@ -60,26 +57,30 @@ const Sensors = (props: ReduxTypes) => {
 	}, [data, dataCode])
 
 	console.log("showed", {...showed})
+	const colors = React.useMemo(() => sensors.map(() => getRandomColor()), [sensors])
 
 	return (
 		<Container className={"Sensors"}>
+
 			{Object.keys(showed).map(s => {
 				const dataCod = dataCode.find(dc => dc.code === s);
 				const title = `Evolution of ${dataCod?.label}`
 
-				const elem = <Accordion className={"accordion"}>
-					<AccordionSummary
-						expandIcon={<ExpandMoreIcon/>}
-						aria-controls="panel1a-content"
-						id="panel1a-header"
-					>
-						<Typography variant={"h5"}>{title}</Typography>
-					</AccordionSummary>
-					<AccordionDetails>
-						<Graph title={title} data={showed[s]}/>
-					</AccordionDetails>
-				</Accordion>
-
+				const elem =
+					<div className={"container"}>
+						<Accordion className={"accordion"} key={s}>
+							<AccordionSummary
+								expandIcon={<ExpandMoreIcon/>}
+								aria-controls="panel1a-content"
+								id="panel1a-header"
+							>
+								<Typography variant={"h5"}>{title}</Typography>
+							</AccordionSummary>
+							<AccordionDetails>
+								<Graph title={title} data={showed[s]} colors={colors}/>
+							</AccordionDetails>
+						</Accordion>
+					</div>
 				return showed[s].length && elem;
 			})}
 		</Container>
@@ -88,4 +89,4 @@ const Sensors = (props: ReduxTypes) => {
 }
 
 
-export default connector(Sensors);
+export default Sensors
