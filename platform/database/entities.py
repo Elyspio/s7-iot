@@ -4,7 +4,9 @@ from .tables import DataCode as T_DataCode, Sensor as T_Sensor, Data as T_Data
 
 
 class DataCode:
-
+    """
+    Informations sur le type de données (température ou luminosité)
+    """
     @staticmethod
     def from_db(db: T_DataCode) -> "self":
         return DataCode(db.id, db.label, db.code)
@@ -16,9 +18,12 @@ class DataCode:
 
 
 class Sensor:
-
+    """
+    Information sur la microbit qui à emit une donnée
+    """
     def __init__(self, serial: str, label: str):
         self.serial = serial
+        # nom de la microbit, ex: Salon, cuisine, jardin, etc.
         self.label = label
 
     @staticmethod
@@ -27,7 +32,9 @@ class Sensor:
 
 
 class Data:
-
+    """
+    Donnée issue d'un capteur
+    """
     @staticmethod
     def from_db(db: T_Data) -> "self":
         return Data(db.id, db.value, db.date, DataCode.from_db(db.code), Sensor.from_db(db.sensor))

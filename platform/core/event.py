@@ -13,3 +13,7 @@ class Observable:
     def notify(self, *args):
         for observer in self._observers:
             observer(*args)
+
+
+
+database_event_manager = Observable()

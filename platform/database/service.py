@@ -5,7 +5,7 @@ from typing import Any
 
 from .entities import DataCode as E_DateCode, Data as E_Data, Sensor as E_Sensor
 from .tables import Data, DataCode, Sensor
-
+from core.event import database_event_manager
 
 class DataCodeKeys(Enum):
     TEMPERATURE = "TEM"
@@ -39,8 +39,12 @@ def add_data(code: str, value: str, id_sensor: str) -> E_Data:
         raise NameError(f"No sensor with serial '{id_sensor}'")
     data = Data.create(value=value, code=code_db, sensor=sensor, date=datetime.now().timestamp())
 
-    return E_Data(data.id, data.value, data.date, code_db, sensor)
+    data = E_Data(data.id, data.value, data.date, code_db, sensor)
 
+    # Notification qu'une nouvelle données est ajouter
+    database_event_manager.notify(data)
+
+    return data
     # todo call Jule's function
 
 
