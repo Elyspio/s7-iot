@@ -5,17 +5,10 @@
 from android.link import run_android_link
 from database.tables import initialize_db
 from microbit.link import run_microbit_link
+from web.server import run_web_server
 
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
-
-
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
 initialize_db()
 run_android_link()
-run_microbit_link()
-
+# run_microbit_link()
+run_web_server()
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/

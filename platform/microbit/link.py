@@ -6,8 +6,8 @@ from threading import Thread
 import serial
 
 from core.event import Observable
-from database.database import add_data
-from database.database import get_data, DataCodeKeys
+from database.service import add_data
+from database.service import get_data, DataCodeKeys
 from database.entities import Data
 
 
@@ -57,6 +57,7 @@ class Serial(Observable):
             print("malformed serial input")
         else:
             for i in range(1, len(fields)):
-                ret.append(add_data(fields[i], values[i], id[1]))
+                # ret.append(add_data(fields[i], values[i], id[1]))
+                pass
 
         return ret
