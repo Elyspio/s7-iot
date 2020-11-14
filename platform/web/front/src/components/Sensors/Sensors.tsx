@@ -51,7 +51,7 @@ const Sensors = (props: ReduxTypes) => {
 			// @ts-ignore
 			store[current] = data.filter(d => d.code.code === current).map(d => {
 				return {
-					date: d.date,
+					date: d.date.getTime(),
 					[d.sensor.label]: d.value
 				}
 			})
