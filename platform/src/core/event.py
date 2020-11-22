@@ -6,7 +6,7 @@ class Observable:
     def __init__(self):
         self._observers = []
 
-    def register(self, on_update: Callable[[Any], None]):
+    def register(self, on_update: Callable[[Any], Any]):
         self._observers.append(on_update)
 
     def notify(self, *args):
