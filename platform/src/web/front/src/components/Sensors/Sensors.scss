@@ -1,0 +1,28 @@
+.Sensors {
+
+  display: flex !important;
+
+  margin: 4rem 0 !important;
+  max-width: unset !important;
+
+  .container {
+    height: 100%;
+    width: 100%;
+    margin: 1rem;
+    flex-shrink: 1;
+
+  }
+
+  .accordion {
+
+    margin-bottom: 2rem;
+
+    .Graph {
+      margin-top: 2rem;
+      padding: 2rem;
+      width: 100%;
+    }
+  }
+
+
+}
