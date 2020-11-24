@@ -50,7 +50,6 @@ def get_data(sensor_serial: str) -> list[E_Data]:
     """
     returns all data for that sensor
     """
-
     try:
         data: list[Data] = list(Data.select()
                                 .join(Sensor, on=(Data.sensor == Sensor.serial))
@@ -76,3 +75,21 @@ class MyEncoder(JSONEncoder):
 
 def to_json(any: Any) -> str:
     return dumps(cls=MyEncoder, obj=any)
+
+
+def get_last_data(sensor_serial,type_id: str) -> list[E_Data]:
+    """
+    returns 2 last data for that sensor
+    """
+    try:
+        data: list[Data] = list(Data.select()
+                                .join(Sensor, on=(Data.sensor == Sensor.serial))
+                                .where(Sensor.serial == sensor_serial)
+                                .where(Data.type == type_id)
+                                .order_by(Data.id.desc())
+                                .limit(1))
+        return list(map(E_Data.from_db, data))
+
+    except Exception:
+        raise NameError(f"could not find a sensor with serial: {sensor_serial}")
+        pass
