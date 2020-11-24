@@ -12,6 +12,10 @@ import android.widget.TextView;
 
 import com.google.android.material.bottomappbar.BottomAppBar;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -56,16 +60,28 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+
                 Thread threadRecep = new Thread(){
                     public void run(){
                         while(true){
-                            String temperature = recupStream(0);
-                            String brigthness = recupStream(1);
+                            String temperature = recupStream(1);
+                            String brigthness = recupStream(0);
+
+                            if(temperature !=null) temperature = recupData(temperature, "value");
+                            if(brigthness !=null) brigthness = recupData(brigthness, "value");
+
+                            String finalTemperature = temperature;
+                            String finalBrigthness = brigthness;
                             MainActivity.this.runOnUiThread(()->{
-                                tvTemperature.setText(temperature);
-                                tvBrigthness.setText(brigthness);
+                                tvTemperature.setText(finalTemperature);
+                                tvBrigthness.setText(finalBrigthness);
                             });
 
+                            try {
+                                Thread.sleep(10000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
                 };
@@ -73,8 +89,6 @@ public class MainActivity extends AppCompatActivity {
 
                 bapNetwork.setVisibility(View.INVISIBLE);
                 btNetwork.setVisibility(View.VISIBLE);
-
-
             }
         }));
 
@@ -109,4 +123,17 @@ public class MainActivity extends AppCompatActivity {
         return result;
     }
 
+    private String recupData(String stream, String data){
+        JSONArray jsonArray = null;
+        JSONObject jsonObject = null;
+        String result = null;
+        try {
+            jsonArray = new JSONArray(stream);
+            jsonObject = (JSONObject) jsonArray.get(0);
+            result = String.valueOf(jsonObject.get(data));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
 }
