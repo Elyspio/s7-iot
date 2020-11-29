@@ -2,13 +2,15 @@ package com.example.iot_project;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.google.android.material.bottomappbar.BottomAppBar;
 
@@ -22,8 +24,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.ParseException;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,8 +34,11 @@ public class MainActivity extends AppCompatActivity {
     private BottomAppBar bapNetwork;
     private EditText etIp;
     private EditText etPort;
+    private TextView tvState;
     private TextView tvTemperature;
     private TextView tvBrigthness;
+    private ToggleButton tbOrder;
+    private Spinner spRoom;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,8 +50,20 @@ public class MainActivity extends AppCompatActivity {
         bapNetwork = (BottomAppBar)findViewById(R.id.bap_network);
         etIp = (EditText)findViewById(R.id.et_ip);
         etPort = (EditText)findViewById(R.id.et_port);
+        tvState = (TextView)findViewById(R.id.tv_state);
         tvTemperature = (TextView)findViewById(R.id.tv_temperature);
         tvBrigthness = (TextView)findViewById(R.id.tv_brightness);
+        tbOrder = (ToggleButton)findViewById(R.id.tb_order);
+        spRoom = findViewById(R.id.sp_room);
+
+
+//create a list of items for the spinner.
+        String[] items = new String[]{"Salon", "Test"};
+//create an adapter to describe how the items are displayed, adapters are used in several places in android.
+//There are multiple variations of this, but this is the basic variant.
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, items);
+//set the spinners adapter to the previously created one.
+        spRoom.setAdapter(adapter);
 
         btNetwork.setOnClickListener((new View.OnClickListener() {
             @Override
@@ -56,31 +73,56 @@ public class MainActivity extends AppCompatActivity {
             }
         }));
 
-        btConnection.setOnClickListener((new View.OnClickListener() {
+        btConnection.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-
                 Thread threadRecep = new Thread(){
                     public void run(){
-                        while(true){
-                            String temperature = recupStream(1);
-                            String brigthness = recupStream(0);
+                        while (true) {
+                            if(testConnection(etIp.getText().toString(), etPort.getText().toString())) {
 
-                            if(temperature !=null) temperature = recupData(temperature, "value");
-                            if(brigthness !=null) brigthness = recupData(brigthness, "value");
+                                Log.d("test", String.valueOf(spRoom.getSelectedItem()));
 
-                            String finalTemperature = temperature;
-                            String finalBrigthness = brigthness;
-                            MainActivity.this.runOnUiThread(()->{
-                                tvTemperature.setText(finalTemperature);
-                                tvBrigthness.setText(finalBrigthness);
-                            });
+                                int room;
+                                switch(String.valueOf(spRoom.getSelectedItem())){
+                                    case "Salon":
+                                        room = 9;
+                                        break;
+                                    case "Test":
+                                        room = 10;
+                                        break;
+                                    default:
+                                        throw new IllegalStateException("Unexpected value: " + String.valueOf(spRoom.getSelectedItem()));
+                                }
 
-                            try {
-                                Thread.sleep(10000);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
+
+                                String temperature = recupStream(etIp.getText().toString(), etPort.getText().toString(), room,1);
+                                String brigthness = recupStream(etIp.getText().toString(), etPort.getText().toString(), room,0);
+
+                                if (temperature != null)
+                                    temperature = recupData(temperature, "value");
+                                if (brigthness != null) brigthness = recupData(brigthness, "value");
+
+                                String finalTemperature = temperature;
+                                String finalBrigthness = brigthness;
+                                MainActivity.this.runOnUiThread(() -> {
+                                    tvState.setText("Connecté");
+                                    tvTemperature.setText(finalTemperature);
+                                    tvBrigthness.setText(finalBrigthness);
+                                });
+
+                                try {
+                                    Thread.sleep(10000);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                            else{
+                                MainActivity.this.runOnUiThread(() -> {
+                                    tvState.setText("Déconnecté");
+                                    tvTemperature.setText("Température");
+                                    tvBrigthness.setText("Luminosité");
+                                });
                             }
                         }
                     }
@@ -89,6 +131,14 @@ public class MainActivity extends AppCompatActivity {
 
                 bapNetwork.setVisibility(View.INVISIBLE);
                 btNetwork.setVisibility(View.VISIBLE);
+                tbOrder.setVisibility(View.VISIBLE);
+            }
+        });
+
+        tbOrder.setOnClickListener((new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("check", String.valueOf(tbOrder.isChecked()));
             }
         }));
 
@@ -104,17 +154,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private String recupStream(int data){
+    private String recupStream(String ip, String port, int room, int data){
         String result = null;
         HttpURLConnection urlConnection = null;
         URL url = null;
         try {
-            url = new URL("http://10.0.2.2:5000/api/data/last/9/"+data);
+            url = new URL("http://"+ ip +":"+ port +"/api/data/last/"+ room +"/"+ data);
             urlConnection = (HttpURLConnection) url.openConnection();
             InputStream in = new BufferedInputStream(urlConnection.getInputStream());
             result = readStream(in);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -135,5 +183,22 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         return result;
+    }
+
+    private Boolean testConnection(String ip, String port){
+        Boolean connected = false;
+        HttpURLConnection urlConnection = null;
+        URL url = null;
+        try {
+            url = new URL("http://"+ ip +":"+ port +"/api/data/9");
+            urlConnection = (HttpURLConnection) url.openConnection();
+            connected = true;
+            Log.d("test","good");
+        } catch (IOException e) {
+            Log.d("test","wrong");
+        } finally {
+            urlConnection.disconnect();
+        }
+        return connected;
     }
 }
