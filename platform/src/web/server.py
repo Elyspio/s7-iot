@@ -15,6 +15,10 @@ def index():
     return app.send_static_file('index.html')
 
 
+@app.get("/api")
+def check_server_presence():
+    return ""
+
 def run_web_server():
     app.run(debug=True, use_reloader=False)
 
