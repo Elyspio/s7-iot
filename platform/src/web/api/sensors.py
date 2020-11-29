@@ -9,4 +9,6 @@ def get_sensors():
 
 @app.route("/api/sensors/order", methods=["POST"])
 def sensor_order():
+    print(request.form)
     user_request_manager.notify(request.form)
+    return ''

@@ -25,7 +25,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.text.ParseException;
+
+import retrofit2.Retrofit;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -39,11 +40,15 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvBrigthness;
     private ToggleButton tbOrder;
     private Spinner spRoom;
+    private API service;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        this.service = new Retrofit.Builder().baseUrl("http://10.0.2.2:5000/api/").build().create(API.class);
 
         btNetwork = (Button)findViewById(R.id.bt_network);
         btConnection = (Button)findViewById(R.id.bt_connection);
@@ -139,6 +144,18 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Log.d("check", String.valueOf(tbOrder.isChecked()));
+
+                Thread threadSend = new Thread(){
+                    public void run() {
+                        try {
+                            MainActivity.this.service.setOrder(9, new String[]{"T", "L"}).execute();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                };
+                threadSend.start();
+
             }
         }));
 
@@ -192,10 +209,14 @@ public class MainActivity extends AppCompatActivity {
         try {
             url = new URL("http://"+ ip +":"+ port +"/api/data/9");
             urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.getResponseCode();
             connected = true;
-            Log.d("test","good");
-        } catch (IOException e) {
-            Log.d("test","wrong");
+            Log.d("connected","true");
+        }catch(java.net.UnknownHostException e) {
+            Log.d("connected", "false");
+            connected = false;
+        } catch (IOException e){
+
         } finally {
             urlConnection.disconnect();
         }
