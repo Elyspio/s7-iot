@@ -77,7 +77,7 @@ def to_json(any: Any) -> str:
     return dumps(cls=MyEncoder, obj=any)
 
 
-def get_last_data(sensor_serial,type_id: str) -> list[E_Data]:
+def get_last_data(sensor_serial,type_id: str) -> E_Data:
     """
     returns 2 last data for that sensor
     """
@@ -88,7 +88,7 @@ def get_last_data(sensor_serial,type_id: str) -> list[E_Data]:
                                 .where(Data.type == type_id)
                                 .order_by(Data.id.desc())
                                 .limit(1))
-        return list(map(E_Data.from_db, data))
+        return list(map(E_Data.from_db, data))[0]
 
     except Exception:
         raise NameError(f"could not find a sensor with serial: {sensor_serial}")
