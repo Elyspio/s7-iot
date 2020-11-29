@@ -26,7 +26,9 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import retrofit2.Call;
 import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -48,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        this.service = new Retrofit.Builder().baseUrl("http://10.0.2.2:5000/api/").build().create(API.class);
+        this.service = new Retrofit.Builder().baseUrl("http://10.0.2.2:5000/api/").addConverterFactory(GsonConverterFactory.create()).build().create(API.class);
 
         btNetwork = (Button)findViewById(R.id.bt_network);
         btConnection = (Button)findViewById(R.id.bt_connection);
@@ -61,7 +63,6 @@ public class MainActivity extends AppCompatActivity {
         tbOrder = (ToggleButton)findViewById(R.id.tb_order);
         spRoom = findViewById(R.id.sp_room);
 
-
 //create a list of items for the spinner.
         String[] items = new String[]{"Salon", "Test"};
 //create an adapter to describe how the items are displayed, adapters are used in several places in android.
@@ -69,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, items);
 //set the spinners adapter to the previously created one.
         spRoom.setAdapter(adapter);
+
 
         btNetwork.setOnClickListener((new View.OnClickListener() {
             @Override
@@ -78,73 +80,79 @@ public class MainActivity extends AppCompatActivity {
             }
         }));
 
-        btConnection.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Thread threadRecep = new Thread(){
-                    public void run(){
-                        while (true) {
-                            if(testConnection(etIp.getText().toString(), etPort.getText().toString())) {
+        btConnection.setOnClickListener(v -> {
+            Thread threadRecep = new Thread(){
+                public void run(){
 
-                                Log.d("test", String.valueOf(spRoom.getSelectedItem()));
+                    Call<Data[]> result = MainActivity.this.service.getData(9,1);
+                    try {
+                        Data[] v = result.execute().body();
 
-                                int room;
-                                switch(String.valueOf(spRoom.getSelectedItem())){
-                                    case "Salon":
-                                        room = 9;
-                                        break;
-                                    case "Test":
-                                        room = 10;
-                                        break;
-                                    default:
-                                        throw new IllegalStateException("Unexpected value: " + String.valueOf(spRoom.getSelectedItem()));
-                                }
+                        Log.d("test", v[0].value);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
 
+                    /*while (true) {
+                        if(testConnection(etIp.getText().toString(), etPort.getText().toString())) {
 
-                                String temperature = recupStream(etIp.getText().toString(), etPort.getText().toString(), room,1);
-                                String brigthness = recupStream(etIp.getText().toString(), etPort.getText().toString(), room,0);
+                            Log.d("test", String.valueOf(spRoom.getSelectedItem()));
 
-                                if (temperature != null)
-                                    temperature = recupData(temperature, "value");
-                                if (brigthness != null) brigthness = recupData(brigthness, "value");
-
-                                String finalTemperature = temperature;
-                                String finalBrigthness = brigthness;
-                                MainActivity.this.runOnUiThread(() -> {
-                                    tvState.setText("Connecté");
-                                    tvTemperature.setText(finalTemperature);
-                                    tvBrigthness.setText(finalBrigthness);
-                                });
-
-                                try {
-                                    Thread.sleep(10000);
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
+                            int room;
+                            switch(String.valueOf(spRoom.getSelectedItem())){
+                                case "Salon":
+                                    room = 9;
+                                    break;
+                                case "Test":
+                                    room = 10;
+                                    break;
+                                default:
+                                    throw new IllegalStateException("Unexpected value: " + String.valueOf(spRoom.getSelectedItem()));
                             }
-                            else{
-                                MainActivity.this.runOnUiThread(() -> {
-                                    tvState.setText("Déconnecté");
-                                    tvTemperature.setText("Température");
-                                    tvBrigthness.setText("Luminosité");
-                                });
+
+
+                            String temperature = recupStream(etIp.getText().toString(), etPort.getText().toString(), room,1);
+                            String brigthness = recupStream(etIp.getText().toString(), etPort.getText().toString(), room,0);
+
+                            if (temperature != null)
+                                temperature = recupData(temperature, "value");
+                            if (brigthness != null) brigthness = recupData(brigthness, "value");
+
+
+                            String finalTemperature = temperature;
+                            String finalBrigthness = brigthness;
+                            MainActivity.this.runOnUiThread(() -> {
+                                tvState.setText("Connecté");
+                                tvTemperature.setText(finalTemperature);
+                                tvBrigthness.setText(finalBrigthness);
+                            });
+
+                            try {
+                                Thread.sleep(10000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
                             }
                         }
-                    }
-                };
-                threadRecep.start();
+                        else{
+                            MainActivity.this.runOnUiThread(() -> {
+                                tvState.setText("Déconnecté");
+                                tvTemperature.setText("Température");
+                                tvBrigthness.setText("Luminosité");
+                            });
+                        }
+                    }*/
+                }
+            };
+            threadRecep.start();
 
-                bapNetwork.setVisibility(View.INVISIBLE);
-                btNetwork.setVisibility(View.VISIBLE);
-                tbOrder.setVisibility(View.VISIBLE);
-            }
+            bapNetwork.setVisibility(View.INVISIBLE);
+            btNetwork.setVisibility(View.VISIBLE);
+            tbOrder.setVisibility(View.VISIBLE);
         });
 
         tbOrder.setOnClickListener((new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("check", String.valueOf(tbOrder.isChecked()));
-
                 Thread threadSend = new Thread(){
                     public void run() {
                         try {
@@ -155,7 +163,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 };
                 threadSend.start();
-
             }
         }));
 
