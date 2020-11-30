@@ -5,13 +5,16 @@ from src.database.entities import Data
 from src.database.service import add_data
 from src.microbit.uart import Uart
 
+s = Uart()
 
-def on_user_request(val):
+def on_user_request(val: {"sensor_id": str, "order": list[str]}):
     """
     Function called when user trigger an input on android app
     :param val:
     :return:
     """
+    print("user request", val)
+    s.write_line(f"{val['sensor_id']};{val['order']}")
     pass
 
 
@@ -36,7 +39,7 @@ def create_obj_from_serial(record: str) -> list[Data]:
 
 
 def run_microbit_link():
-    s = Uart()
+
     s.register(create_obj_from_serial)
     user_request_manager.register(on_user_request)
     pass

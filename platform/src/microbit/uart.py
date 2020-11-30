@@ -27,5 +27,5 @@ class Uart(Observable):
             # print(f"Read: {data}")
             self.notify(data)
 
-    def write(self, data: str):
-        self.serial.write(data)
+    def write_line(self, data: str):
+        self.serial.writelines([data])
