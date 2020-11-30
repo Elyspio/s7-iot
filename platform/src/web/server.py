@@ -15,7 +15,7 @@ def index():
     return app.send_static_file('index.html')
 
 
-@app.get("/api")
+@app.route("/api/")
 def check_server_presence():
     return ""
 

@@ -1,6 +1,4 @@
-package com.example.iot_project;
-
-import java.util.Date;
+package com.example.iot_project.models;
 
 public class Data {
     final Integer id;
@@ -15,5 +13,25 @@ public class Data {
         this.date = date;
         this.sensor = sensor;
         this.code = code;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public Sensor getSensor() {
+        return sensor;
+    }
+
+    public Code getCode() {
+        return code;
     }
 }
