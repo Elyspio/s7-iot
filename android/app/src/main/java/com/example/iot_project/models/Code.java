@@ -5,20 +5,36 @@ public class Code {
     final String label;
     final String code;
 
+    /*
+       Function Code
+       Constructeur
+    */
     public Code(Integer id, String label, String code) {
         this.id = id;
         this.label = label;
         this.code = code;
     }
 
+    /*
+        Function getId
+        Getter
+     */
     public Integer getId() {
         return id;
     }
 
+    /*
+        Function getLabel
+        Getter
+     */
     public String getLabel() {
         return label;
     }
 
+    /*
+        Function getCode
+        Getter
+     */
     public String getCode() {
         return code;
     }

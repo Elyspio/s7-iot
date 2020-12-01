@@ -14,11 +14,18 @@ import java.util.List;
 
 public class SensorAdapter extends ArrayAdapter<Sensor> {
 
-
-    public SensorAdapter(Context context, List<Sensor> users) {
-        super(context, R.layout.sensor, R.id.sensor_label, users);
+    /*
+       Function Code
+       Constructeur
+    */
+    public SensorAdapter(Context context, List<Sensor> sensors) {
+        super(context, R.layout.sensor, R.id.sensor_label, sensors);
     }
 
+    /*
+       Function getView
+       Permet de retourner la vue
+    */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         Sensor sensor = getItem(position);
@@ -30,6 +37,10 @@ public class SensorAdapter extends ArrayAdapter<Sensor> {
         return convertView;
     }
 
+    /*
+       Function getView
+       Permet de retourner la vue
+    */
     @Override
     public View getDropDownView(int position, View convertView, ViewGroup parent) {
         Sensor sensor = getItem(position);
