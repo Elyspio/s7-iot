@@ -2,10 +2,11 @@
 
 from src.core.event import user_request_manager
 from src.database.entities import Data
-from src.database.service import add_data
+from src.database.service import add_data, DataCodeKeys
 from src.microbit.uart import Uart
 
 s = Uart()
+
 
 def on_user_request(val: {"sensor_id": str, "order": list[str]}):
     """
@@ -14,7 +15,7 @@ def on_user_request(val: {"sensor_id": str, "order": list[str]}):
     :return:
     """
     print("user request", val)
-    s.write_line(f"{val['sensor_id']};{val['order']}")
+    s.write_line(f"{val['sensor_id']};{''.join(val['order'])}")
     pass
 
 
@@ -32,14 +33,17 @@ def create_obj_from_serial(record: str) -> list[Data]:
         print("malformed serial input")
     else:
         for i in range(1, len(fields)):
-            ret.append(add_data(fields[i], values[i], id[1]))
-            pass
+
+            try:
+                ret.append(add_data(DataCodeKeys.from_str(fields[i]), values[i], id[1]))
+            except:
+                print("Ignored: ", record)
+                pass
 
     return ret
 
 
 def run_microbit_link():
-
     s.register(create_obj_from_serial)
     user_request_manager.register(on_user_request)
     pass

@@ -9,15 +9,21 @@ from .tables import Data, DataCode, Sensor
 
 
 class DataCodeKeys(Enum):
-    TEMPERATURE = "TEM"
-    LUMINOSITY = "LUM"
+    TEMPERATURE = "TEMPERATURE"
+    LUMINOSITY = "LUMINOSITY"
 
     @staticmethod
     def from_str(code: str) -> "self":
-        if code == "TEM":
-            return DataCodeKeys.TEMPERATURE
-        if code == "LUM":
-            return DataCodeKeys.LUMINOSITY
+
+        values = {
+            DataCodeKeys.TEMPERATURE: ["TEM", "TEMPERATURE"],
+            DataCodeKeys.LUMINOSITY: ["LUM", "LUMINOSITY"]
+        }
+
+        for key in values.keys():
+            if code in values[key]:
+                return key
+
         raise NameError(f"Could not find DataCodeKeys with code = {code}")
 
 
@@ -25,13 +31,13 @@ def get_codes() -> list[E_DateCode]:
     return list(map(E_DateCode.from_db, list(DataCode.select())))
 
 
-def add_data(code: str, value: str, id_sensor: str) -> E_Data:
+def add_data(code: DataCodeKeys, value: str, id_sensor: str) -> E_Data:
     """
     Add a data to database
     -
     return the data created
     """
-    code_db: DataCode = DataCode.get(DataCode.code == code)
+    code_db: DataCode = DataCode.get(DataCode.code == code.value)
     sensor: Sensor = Sensor.get_or_none(Sensor.serial == id_sensor)
 
     if sensor is None:

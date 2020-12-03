@@ -20,12 +20,10 @@ class Uart(Observable):
     def listen(self):
         while self.serial.isOpen():
             raw = self.serial.readline()
-            print(f"raw {raw}")
-
             data = raw.decode("utf-8")[0:-2]
-            # self.create_obj_from_serial(data)
-            # print(f"Read: {data}")
             self.notify(data)
 
     def write_line(self, data: str):
-        self.serial.writelines([data])
+
+        print("Write on serial " + data )
+        self.serial.writelines(data.encode())
