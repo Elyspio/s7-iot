@@ -32,7 +32,6 @@ public class MainActivity extends AppCompatActivity {
     private BottomAppBar bapNetwork;
     private EditText etIp;
     private EditText etPort;
-    private TextView tvState;
     private TextView tvTemperature;
     private TextView tvBrigthness;
     private ToggleButton tbOrder;
@@ -55,7 +54,6 @@ public class MainActivity extends AppCompatActivity {
         bapNetwork = findViewById(R.id.bap_network);
         etIp = findViewById(R.id.et_ip);
         etPort = findViewById(R.id.et_port);
-        tvState = findViewById(R.id.tv_state);
         tvTemperature = findViewById(R.id.tv_temperature);
         tvBrigthness = findViewById(R.id.tv_brightness);
         tbOrder = findViewById(R.id.tb_order);
