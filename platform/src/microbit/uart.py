@@ -26,4 +26,4 @@ class Uart(Observable):
     def write_line(self, data: str):
 
         print("Write on serial " + data )
-        self.serial.writelines(data.encode())
+        self.serial.write(f"{data}#".encode())

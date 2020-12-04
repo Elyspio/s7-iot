@@ -12,20 +12,26 @@ import com.example.iot_project.models.Sensor;
 
 import java.util.List;
 
+/**
+ * Cette classe permet de faire en sorte que le composant
+ */
 public class SensorAdapter extends ArrayAdapter<Sensor> {
 
     /*
-       Function Code
        Constructeur
     */
     public SensorAdapter(Context context, List<Sensor> sensors) {
         super(context, R.layout.sensor, R.id.sensor_label, sensors);
     }
 
-    /*
-       Function getView
-       Permet de retourner la vue
-    */
+
+
+    /**
+     * Permet de retourner un item lors de l'affchage standard (valeur choisie)
+     * @param position
+     * @param convertView
+     * @param parent
+     */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         Sensor sensor = getItem(position);
@@ -37,10 +43,13 @@ public class SensorAdapter extends ArrayAdapter<Sensor> {
         return convertView;
     }
 
-    /*
-       Function getView
-       Permet de retourner la vue
-    */
+
+    /**
+     * Permet de retourner un item lors de l'affichage du dropdown
+     * @param position index 
+     * @param convertView
+     * @param parent
+     */
     @Override
     public View getDropDownView(int position, View convertView, ViewGroup parent) {
         Sensor sensor = getItem(position);

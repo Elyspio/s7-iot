@@ -157,8 +157,6 @@ public class MainActivity extends AppCompatActivity {
             btnNetwork.setVisibility(View.VISIBLE);                                     //Rend visible le bouton Réseau
             tbOrder.setVisibility(View.VISIBLE);                                        //Rend visible le bouton de gestion de l'ordre d'affichage coté microbit
 
-            Toast.makeText(this, "", Toast.LENGTH_SHORT).show();
-
         });
 
         /*
@@ -170,7 +168,10 @@ public class MainActivity extends AppCompatActivity {
                 public void run() {
                     try {
                         if (MainActivity.this.selected != null) {                   //Si une pièce est séléctionnée
-                            MainActivity.this.service.setOrder(MainActivity.this.selected.getSerial(), new String[]{"T", "L"}).execute();       //Envoie de l'odre au serveur
+
+                            String[] order = tbOrder.isChecked() ? new String[]{"T", "L"} : new String[]{"L", "T"};
+
+                            MainActivity.this.service.setOrder(MainActivity.this.selected.getSerial(), order).execute();       //Envoie de l'odre au serveur
                         }
                     } catch (IOException e) {                                       //Récupération des erreurs
                         e.printStackTrace();
